@@ -12,15 +12,16 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
-$(document).ready(function() {
+$(document).ready(function () {
     if (!window.console) window.console = {};
-    if (!window.console.log) window.console.log = function() {};
+    if (!window.console.log) window.console.log = function () {
+    };
 
-    $("#messageform").on("submit", function() {
+    $("#messageform").on("submit", function () {
         newMessage($(this));
         return false;
     });
-    $("#messageform").on("keypress", function(e) {
+    $("#messageform").on("keypress", function (e) {
         if (e.keyCode == 13) {
             newMessage($(this));
             return false;
@@ -35,7 +36,7 @@ function newMessage(form) {
     var message = form.formToDict();
     var disabled = form.find("input[type=submit]");
     disabled.disable();
-    $.postJSON("/api/message/new", message, function(response) {
+    $.postJSON("/api/message/new", message, function (response) {
         updater.showMessage(response);
         if (message.id) {
             form.parent().remove();
@@ -51,17 +52,19 @@ function getCookie(name) {
     return r ? r[1] : undefined;
 }
 
-jQuery.postJSON = function(url, args, callback) {
+jQuery.postJSON = function (url, args, callback) {
     args._xsrf = getCookie("_xsrf");
-    $.ajax({url: url, data: $.param(args), dataType: "text", type: "POST",
-            success: function(response) {
-        if (callback) callback(eval("(" + response + ")"));
-    }, error: function(response) {
-        console.log("ERROR:", response);
-    }});
+    $.ajax({
+        url: url, data: $.param(args), dataType: "text", type: "POST",
+        success: function (response) {
+            if (callback) callback(eval("(" + response + ")"));
+        }, error: function (response) {
+            console.log("ERROR:", response);
+        }
+    });
 };
 
-jQuery.fn.formToDict = function() {
+jQuery.fn.formToDict = function () {
     var fields = this.serializeArray();
     var json = {};
     for (var i = 0; i < fields.length; i++) {
@@ -71,12 +74,12 @@ jQuery.fn.formToDict = function() {
     return json;
 };
 
-jQuery.fn.disable = function() {
+jQuery.fn.disable = function () {
     this.enable(false);
     return this;
 };
 
-jQuery.fn.enable = function(opt_enable) {
+jQuery.fn.enable = function (opt_enable) {
     if (arguments.length && !opt_enable) {
         this.attr("disabled", "disabled");
     } else {
@@ -89,15 +92,17 @@ var updater = {
     errorSleepTime: 500,
     cursor: null,
 
-    poll: function() {
+    poll: function () {
         var args = {"_xsrf": getCookie("_xsrf")};
         if (updater.cursor) args.cursor = updater.cursor;
-        $.ajax({url: "/api/message/updates", type: "POST", dataType: "text",
-                data: $.param(args), success: updater.onSuccess,
-                error: updater.onError});
+        $.ajax({
+            url: "/api/message/updates", type: "POST", dataType: "text",
+            data: $.param(args), success: updater.onSuccess,
+            error: updater.onError
+        });
     },
 
-    onSuccess: function(response) {
+    onSuccess: function (response) {
         try {
             updater.newMessages(eval("(" + response + ")"));
         } catch (e) {
@@ -108,13 +113,13 @@ var updater = {
         window.setTimeout(updater.poll, 0);
     },
 
-    onError: function(response) {
+    onError: function (response) {
         updater.errorSleepTime *= 2;
         console.log("Poll error; sleeping for", updater.errorSleepTime, "ms");
         window.setTimeout(updater.poll, updater.errorSleepTime);
     },
 
-    newMessages: function(response) {
+    newMessages: function (response) {
         if (!response.messages) return;
         var messages = response.messages;
         updater.cursor = messages[messages.length - 1].id;
@@ -124,7 +129,7 @@ var updater = {
         }
     },
 
-    showMessage: function(message) {
+    showMessage: function (message) {
         var existing = $("#m" + message.id);
         if (existing.length > 0) return;
         var node = $(message.html);
