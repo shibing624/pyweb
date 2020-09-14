@@ -1,0 +1,6 @@
+<div class="message" id="m{{ message["id"] }}">
+    <ul>
+        <li>input: {% module linkify(message["body"]) %}</li>
+        <li>output: {% module linkify(message["ret"]) %}</li>
+    </ul>
+</div>
