@@ -8,7 +8,7 @@ var updater = {
     cursor: null,
 
     poll: function () {
-        var args = {'xsrf_': getCookie('xsrf_')};
+        var args = {'_xsrf': getCookie('_xsrf')};
         if (updater.cursor) {
             args.cursor = updater.cursor;
         }
@@ -104,7 +104,7 @@ function getCookie(name) {
 }
 
 jQuery.postJSON = function (url, args, callback) {
-    args.xsrf_ = getCookie('xsrf_');
+    args._xsrf = getCookie('_xsrf');
     $.ajax({
         url: url, data: $.param(args), dataType: 'text', type: 'POST',
         success: function (response) {
