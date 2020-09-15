@@ -8,8 +8,10 @@ var updater = {
     cursor: null,
 
     poll: function () {
-        var args = {'xsrf': getCookie('xsrf')};
-        if (updater.cursor) args.cursor = updater.cursor;
+        var args = {'xsrf_': getCookie('xsrf_')};
+        if (updater.cursor) {
+            args.cursor = updater.cursor;
+        }
         $.ajax({
             url: '/api/message/updates', type: 'POST', dataType: 'text',
             data: $.param(args), success: updater.onSuccess,
@@ -48,7 +50,9 @@ var updater = {
 
     showMessage: function (message) {
         var existing = $('#m' + message.id);
-        if (existing.length > 0) return;
+        if (existing.length > 0) {
+            return;
+        }
         var node = $(message.html);
         node.hide();
         $('#inbox').append(node);
@@ -69,7 +73,7 @@ $(document).ready(function () {
         return false;
     });
     $('#messageform').on('keypress', function (e) {
-        if (e.keyCode == 13) {
+        if (e.keyCode === 13) {
             newMessage($(this));
             return false;
         }
@@ -100,7 +104,7 @@ function getCookie(name) {
 }
 
 jQuery.postJSON = function (url, args, callback) {
-    args.xsrf = getCookie('xsrf');
+    args.xsrf_ = getCookie('xsrf_');
     $.ajax({
         url: url, data: $.param(args), dataType: 'text', type: 'POST',
         success: function (response) {
